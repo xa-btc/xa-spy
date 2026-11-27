@@ -1,0 +1,32 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    name: Windows x64 native audit
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+
+      - name: Check source recovery with synthetic files
+        run: python -B -m build_support.test_native_workflow
+
+      - name: Build Release x64 and run CTest
+        run: python "1. build.py" --candidate --tests --no-pause
+
+      - name: Exercise the CLI with synthetic records
+        run: python -B tools/test_native.py --exe out/candidate/Release/XASpy.exe

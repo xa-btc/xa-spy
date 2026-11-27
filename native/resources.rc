@@ -1,0 +1,2 @@
+#include "resource.h"
+IDI_XASPY ICON "xa-spy.ico"
